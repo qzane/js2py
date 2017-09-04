@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Demo</title>
+	</head>
+
+	<body>
+		<div id="app">
+
+			<fieldset>
+				<legend>
+					Add Sum
+				</legend>
+				<div class="form-group">
+					<label>New Number:</label>
+					<input type="text" v-model="newItem.num"/>
+				</div>
+				<div class="form-group">
+					<label></label>
+					<button @click="addToSum">Add to Sum</button>
+				</div>
+		</fieldset>
+		<table>
+			<thead>
+				<tr>
+					<th>History</th>
+					<th>Sum</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="ii in history">
+					<td>{{ ii.num }}</td>
+					<td>{{ ii.sum }}</td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
+	</body>
+	<script src="https://unpkg.com/vue"></script>
+	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script>
+		var vm = new Vue({
+			el: '#app',
+			data: {
+				newItem: {
+					num: 0,
+				},
+				history: [{
+					num: 8,
+					sum: 66
+				}, {
+					num: 22,
+					sum: 58
+				}, {
+					num: 36,
+					sum: 36
+				}]
+			},
+			methods:{
+				addToSum: function(){
+					var sum = vm.$data.history[0].sum
+					var num = this.newItem.num;
+					this.history.unshift(this.newItem);
+					this.newItem = {num: 0};
+					/////////////////// begin http request
+					/////////////////// sum and num are variables to be send
+					hostname = window.location.hostname;
+					if (hostname === ""){
+						hostname = "127.0.0.1";
+					}					
+					hostname = "http://" + hostname + ":18263/?add1=" + sum + "&add2=" + num;
+					console.log("prepare to send msg to " + hostname);
+					$.ajax({
+						type: 'GET',
+						url: hostname,
+						dataType: 'jsonp', 
+						jsonp: "callback",
+						jsonpCallback: "successCallback",
+						success: function (data) {
+							// data is the json object you get from the server
+							console.log(data['ans']);
+							vm.$set(vm.$data.history[0], 'sum', data['ans']);
+						},
+						error: function (error) {
+							console.log("sth wrong with the server");
+						}
+					});
+					////////////////// end http request
+				}
+			}
+		})
+	</script>
+</html>
+
