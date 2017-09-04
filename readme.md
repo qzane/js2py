@@ -1,4 +1,4 @@
-# Python answer Javascript requests with native libraries
+# Python answers Javascript requests with native libraries
 
 * Data bypassing same-origin policy with [JSONP](https://en.wikipedia.org/wiki/JSONP)
 * support both py2 and py3 with only build-in libraries (just for demo, never use them for real projects)
